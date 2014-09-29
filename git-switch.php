@@ -58,7 +58,7 @@ class Git_Switch {
 
 		$wp_admin_bar->add_menu( array(
 			'id'     => 'git-switch',
-			'title'  => sprintf( '(%s)%s', $status['branch'], $status['dirty'] ),
+			'title'  => sprintf( 'git(%s)%s', $status['branch'], $status['dirty'] ),
 			'href'   => '#'
 		) );
 
