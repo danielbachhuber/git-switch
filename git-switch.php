@@ -26,6 +26,7 @@ class Git_Switch {
 	 */
 	private function load() {
 
+		add_action( 'wp_ajax_git-switch-branch', array( $this, 'handle_switch_branch_action' ) );
 		add_action( 'admin_bar_menu', array( $this, 'action_admin_bar_menu' ), 999 );
 
 		add_action( 'wp_head', function() {
@@ -40,6 +41,31 @@ class Git_Switch {
 			</style>
 			<?php
 		});
+
+	}
+
+	/**
+	 * Handle the action to switch a branch
+	 */
+	public function handle_switch_branch_action() {
+
+		if ( ! current_user_can( $this->capability ) || ! wp_verify_nonce( $_GET['nonce'], 'git-switch-branch-' . $_GET['branch'] ) ) {
+			wp_die( "You can't do this." );
+		}
+
+		if ( ! $status = $this->get_git_status() ) {
+			wp_die( "Can't interact with Git." );
+		}
+
+		if ( ! empty( $status['dirty'] ) ) {
+			wp_die( "Can't switch when Git is dirty." );
+		}
+
+		$theme_path = get_stylesheet_directory();
+
+		exec( sprintf( 'cd %s; git checkout %s', escapeshellarg( $theme_path ), escapeshellarg( $_GET['branch'] ) ), $results );
+		wp_safe_redirect( home_url() );
+		exit;
 
 	}
 
@@ -68,6 +94,31 @@ class Git_Switch {
 			'title'  => ( implode('<br>', array_map( 'esc_html', $status['status'] ) ) ),
 			'href'   => '#'
 		) );
+
+		if ( ! empty( $status['remote'] ) ) {
+			$wp_admin_bar->add_menu( array(
+				'parent' => 'git-switch',
+				'id'     => 'git-switch-branches',
+				'title'  => 'Switch branch:',
+				'href'   => '#'
+			) );
+			foreach( $status['remote'] as $remote_branch ) {
+
+				$query_args = array(
+					'action'        => 'git-switch-branch',
+					'branch'        => $remote_branch,
+					'nonce'         => wp_create_nonce( 'git-switch-branch-' . $remote_branch ),
+					);
+				$branch_switch_url = add_query_arg( $query_args, admin_url( 'admin-ajax.php' ) );
+
+				$wp_admin_bar->add_menu( array(
+					'parent' => 'git-switch-branches',
+					'id'     => 'git-switch-branch-' . sanitize_key( $remote_branch ),
+					'title'  => esc_html( $remote_branch ),
+					'href'   => esc_url( $branch_switch_url ),
+				) );
+			}
+		}
 
 	}
 
@@ -107,8 +158,8 @@ class Git_Switch {
 		exec( sprintf( 'cd %s; git branch -r', escapeshellarg( $theme_path ) ), $branches );
 		if ( ! empty( $branches ) ) {
 			$branches = array_map( function( $branch ) {
-				return str_replace( 'origin/', '', $branch );
-			}, explode( PHP_EOL, $branches ) );
+				return trim( str_replace( 'origin/', '', $branch ) );
+			}, $branches );
 			$return['remote'] = $branches;
 		}
 
