@@ -185,7 +185,7 @@ class Git_Switch {
 		}
 
 		$theme_path = get_stylesheet_directory();
-		exec( sprintf( 'cd %s; git fetch origin', escapeshellarg( $theme_path ) ) );
+		exec( sprintf( 'cd %s; git fetch origin; git remote prune origin', escapeshellarg( $theme_path ) ) );
 
 		delete_transient( self::CACHE_KEY );
 
