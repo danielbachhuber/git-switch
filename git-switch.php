@@ -114,10 +114,15 @@ class Git_Switch {
 					);
 				$branch_switch_url = add_query_arg( $query_args, admin_url( 'admin-ajax.php' ) );
 
+				$title = esc_html( $remote_branch );
+				if ( $remote_branch == $status['branch'] ) {
+					$title = '* ' . $title;
+				}
+
 				$wp_admin_bar->add_menu( array(
 					'parent' => 'git-switch-branches',
 					'id'     => 'git-switch-branch-' . sanitize_key( $remote_branch ),
-					'title'  => esc_html( $remote_branch ),
+					'title'  => $title,
 					'href'   => esc_url( $branch_switch_url ),
 				) );
 			}
