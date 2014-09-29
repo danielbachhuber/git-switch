@@ -175,6 +175,28 @@ class Git_Switch {
 		return $return;
 	}
 
+	/**
+	 * Refresh Git
+	 */
+	public function refresh() {
+
+		if ( ! function_exists( 'exec' ) ) {
+			return false;
+		}
+
+		$theme_path = get_stylesheet_directory();
+		exec( sprintf( 'cd %s; git fetch origin', escapeshellarg( $theme_path ) ) );
+
+		delete_transient( self::CACHE_KEY );
+
+		$status = $this->get_git_status();
+		if ( 'detached' !== $status['branch'] && empty( $status['dirty'] ) ) {
+			exec( sprintf( 'cd %s; git pull origin %s', escapeshellarg( $theme_path ), escapeshellarg( $status['branch'] ) ) );
+		}
+
+		delete_transient( self::CACHE_KEY );
+	}
+
 }
 
 /**
