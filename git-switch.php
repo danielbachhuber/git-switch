@@ -12,6 +12,8 @@ class Git_Switch {
 
 	private static $instance;
 
+	const CACHE_KEY = 'git-switch-status';
+
 	public static function get_instance() {
 
 		if ( ! isset( self::$instance ) ) {
@@ -64,6 +66,7 @@ class Git_Switch {
 		$theme_path = get_stylesheet_directory();
 
 		exec( sprintf( 'cd %s; git checkout %s', escapeshellarg( $theme_path ), escapeshellarg( $_GET['branch'] ) ), $results );
+		delete_transient( self::CACHE_KEY );
 		wp_safe_redirect( home_url() );
 		exit;
 
@@ -127,6 +130,10 @@ class Git_Switch {
 	 */
 	public function get_git_status() {
 
+		if ( false !== ( $cache_status = get_transient( self::CACHE_KEY ) ) ) {
+			return $cache_status;
+		}
+
 		if ( ! function_exists( 'exec' ) ) {
 			return false;
 		}
@@ -162,6 +169,8 @@ class Git_Switch {
 			}, $branches );
 			$return['remote'] = $branches;
 		}
+
+		set_transient( self::CACHE_KEY, $return, MINUTE_IN_SECONDS * 5 );
 
 		return $return;
 	}
