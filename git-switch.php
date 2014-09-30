@@ -31,7 +31,7 @@ class Git_Switch {
 		add_action( 'wp_ajax_git-switch-branch', array( $this, 'handle_switch_branch_action' ) );
 		add_action( 'admin_bar_menu', array( $this, 'action_admin_bar_menu' ), 999 );
 
-		add_action( 'wp_head', function() {
+		$clean_link = function() {
 			?>
 			<style>
 			#wp-admin-bar-git-switch-details > a {
@@ -42,7 +42,9 @@ class Git_Switch {
 			}
 			</style>
 			<?php
-		});
+		};
+		add_action( 'admin_head', $clean_link );
+		add_action( 'wp_head', $clean_link );
 
 	}
 
