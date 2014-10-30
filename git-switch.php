@@ -11,6 +11,8 @@
 class Git_Switch {
 
 	private static $instance;
+	
+	private $capability = 'switch_themes';
 
 	const CACHE_KEY = 'git-switch-status';
 
