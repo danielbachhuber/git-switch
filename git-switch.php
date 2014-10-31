@@ -63,10 +63,6 @@ class Git_Switch {
 			wp_die( "Can't interact with Git." );
 		}
 
-		if ( ! empty( $status['dirty'] ) ) {
-			wp_die( "Can't switch when Git is dirty." );
-		}
-
 		$theme_path = get_stylesheet_directory();
 
 		exec( sprintf( 'cd %s; git checkout -f %s', escapeshellarg( $theme_path ), escapeshellarg( $_GET['branch'] ) ), $results );
