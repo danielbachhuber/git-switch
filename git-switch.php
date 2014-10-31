@@ -175,7 +175,7 @@ class Git_Switch {
 			$return['remote'] = $branches;
 		}
 
-		set_transient( self::CACHE_KEY, $return, MINUTE_IN_SECONDS * 5 );
+		set_transient( self::CACHE_KEY, $return, MINUTE_IN_SECONDS * 3 );
 
 		return $return;
 	}
