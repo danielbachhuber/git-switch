@@ -65,7 +65,7 @@ class Git_Switch {
 
 		$theme_path = get_stylesheet_directory();
 
-		exec( sprintf( 'cd %s; git checkout -f %s', escapeshellarg( $theme_path ), escapeshellarg( $_GET['branch'] ) ), $results );
+		exec( sprintf( 'cd %s; git checkout -f %s; git submodule update --init', escapeshellarg( $theme_path ), escapeshellarg( $_GET['branch'] ) ), $results );
 		delete_transient( self::CACHE_KEY );
 		wp_safe_redirect( home_url() );
 		exit;
