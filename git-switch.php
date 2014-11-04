@@ -32,6 +32,14 @@ class Git_Switch {
 
 		add_action( 'wp_ajax_git-switch-branch', array( $this, 'handle_switch_branch_action' ) );
 		add_action( 'admin_bar_menu', array( $this, 'action_admin_bar_menu' ), 999 );
+		
+		if ( defined( 'GIT_SWITCH_DEPLOY_SECRET' )
+		&& ! empty( $_GET['git-switch-auto-deploy'] )
+		&& $_GET['git-switch-auto-deploy'] === GIT_SWITCH_DEPLOY_SECRET ) {
+			$this->refresh();
+			echo "Refreshed.";
+			exit;
+		}
 
 		$clean_link = function() {
 			?>
