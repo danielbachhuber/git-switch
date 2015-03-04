@@ -75,7 +75,7 @@ class Git_Switch {
 
 		exec( sprintf( 'cd %s; git checkout -f %s; git submodule update --init', escapeshellarg( $theme_path ), escapeshellarg( $_GET['branch'] ) ), $results );
 		delete_transient( self::CACHE_KEY );
-		wp_safe_redirect( home_url() );
+		wp_safe_redirect( wp_get_referer() );
 		exit;
 
 	}
